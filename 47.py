@@ -93,6 +93,41 @@ class Chunk:
         else:
             return [res for res in self.morphs if res.pos == pos]
 
+    def get_kaku_prt(self):
+        '''助詞を一つ返す
+        複数ある場合は格助詞を優先し、最後の助詞を返す。
+
+        戻り値：
+        助詞、ない場合は空文字列
+        '''
+        prts = self.get_morphs_by_pos('助詞')
+        if len(prts) > 1:
+
+            # 2つ以上助詞がある場合は、格助詞を優先
+            kaku_prts = self.get_morphs_by_pos('助詞', '格助詞')
+            if len(kaku_prts) > 0:
+                prts = kaku_prts
+
+        if len(prts) > 0:
+            return prts[-1].surgace  # 最後を返す
+        else:
+            return ''
+
+    def get_sahen_wo(self):
+        '''「サ変接続名詞＋を含む場合は、その部分の表層形を返す
+
+        戻り値：
+        「サ変接続名詞＋を」の文字列、なければ空文字列
+        '''
+        for i, morph in enumerate(self.morphs[0:-1]):
+
+            if (morph.pos == '名詞') \
+                    and (morph.pos1 == 'サ変接続') \
+                    and (self.morphs[i + 1].pos == '助詞') \
+                    and (self.morphs[i + 1].suraface == 'を'):
+                return morph.suraface + self.morphs[i + 1].surface
+        return ''
+
 
 def neco_lines():
     '''「吾輩は猫である」の係り受け解析結果のジェネレータ
@@ -180,26 +215,34 @@ with open(fname_result, mode='w') as out_file:
                 continue
 
             # 係り元の列挙
-            prts = []
+            chunks_include_prt = []
             for src in chunk.srcs:
-
-                # 助詞を検索
-                prts_in_chunk = chunks[src].get_morphs_by_pos('助詞')
-                if len(prts_in_chunk) > 1:
-
-                    # Chunk内に2つ以上助詞がある場合は、格助詞を優先
-                    kaku_prts = chunks[src].get_morphs_by_pos('助詞', '格助詞')
-                    if len(kaku_prts) > 0:
-                        prts_in_chunk = kaku_prts
-
-                if len(prts_in_chunk) > 0:
-                    prts.append(prts_in_chunk[-1])  # 抽出する助詞はChunk当たり最後の1つ
-
-            if len(prts) < 1:
+                if len(chunks[src].get_kaku_prt()) > 0:
+                    chunaks_include_prt.append(chunks[src])
+            if len(chunks_include_prt) < 1:
                 continue
 
+            # 係り元に「サ変接続名詞＋を（助詞）」があるかチェック
+            sahen_wo = ''
+            for chunk_src in chunks_include_prt:
+                sahen_wo = chunk_src.get_sahen_wo()
+                if len(sahen_wo) > 0:
+                    chunk_remove = chunk_src
+                    break
+            if len(sahen_wo) < 1:
+                continue
+            # 「サ変接続名詞＋を（助詞）」は述語として動詞と一緒に出力する。
+            chunks_include_prt.remove(chunk_remove)
+
+            # chunkを助詞の辞書順でソート
+            chunks_include_prt.sort(
+                key=lambda x: x.get_kaku_prt()
+            )
             # 出力
-            out_file.write('{}\t{}\n'.format(
-                verbs[0].base,      # 最左の動作の基本形
-                ' '.join(sorted(prt.surface for prt in prts))  # 助詞は辞書順
+            out_file.write('{}\t{}\t{}\n'.format(
+                sahen_wo + verbs[0].base,      # サ変接続名詞＋を＋最左の動作の基本形
+                ' '.join([chunk.get_kaku_prt() \
+                    for chunk in chunks_include_prt]),  # 助詞
+                ' '.join([chunk.normalized_surface() \
+                    for chunk in chunks_include_prt])  # 項
             ))
