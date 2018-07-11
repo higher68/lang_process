@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# 述語でソートして重複除去、その件数でソート
+cut --fields=1 result.txt | sort | uniq --count | sort --numeric-sort --reverse > "predicate.txt"
+cut --fields=1,2 result.txt | sort | uniq --count | sort --numeric-sort --reverse\
+ > "predicate_Particle.txt"
+
+
+

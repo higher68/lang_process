@@ -109,7 +109,7 @@ class Chunk:
                 prts = kaku_prts
 
         if len(prts) > 0:
-            return prts[-1].surgace  # 最後を返す
+            return prts[-1].surface  # 最後を返す
         else:
             return ''
 
@@ -124,8 +124,8 @@ class Chunk:
             if (morph.pos == '名詞') \
                     and (morph.pos1 == 'サ変接続') \
                     and (self.morphs[i + 1].pos == '助詞') \
-                    and (self.morphs[i + 1].suraface == 'を'):
-                return morph.suraface + self.morphs[i + 1].surface
+                    and (self.morphs[i + 1].surface == 'を'):
+                return morph.surface + self.morphs[i + 1].surface
         return ''
 
 
@@ -218,7 +218,7 @@ with open(fname_result, mode='w') as out_file:
             chunks_include_prt = []
             for src in chunk.srcs:
                 if len(chunks[src].get_kaku_prt()) > 0:
-                    chunaks_include_prt.append(chunks[src])
+                    chunks_include_prt.append(chunks[src])
             if len(chunks_include_prt) < 1:
                 continue
 
@@ -242,7 +242,7 @@ with open(fname_result, mode='w') as out_file:
             out_file.write('{}\t{}\t{}\n'.format(
                 sahen_wo + verbs[0].base,      # サ変接続名詞＋を＋最左の動作の基本形
                 ' '.join([chunk.get_kaku_prt() \
-                    for chunk in chunks_include_prt]),  # 助詞
+                        for chunk in chunks_include_prt]),  # 助詞
                 ' '.join([chunk.normalized_surface() \
-                    for chunk in chunks_include_prt])  # 項
+                        for chunk in chunks_include_prt])  # 項
             ))
