@@ -282,19 +282,23 @@ with open(fname_result, mode='w') as out_file:
 
                 # 経路上の共通のchunkでぶつかるパターン
 
-                
-        # chunkを列挙
-        for chunk in chunks:
-
-            # 名詞を含むかチェック
-            if len(chunk.get_morphs_by_pos('名詞')) > 0:
-
-                # 名詞のchunkを出力
-                out_file.write(chunk.normalized_surface())
-
-                # 根へのパスを出力
-                dst = chunk.dst  # 係り先
-                while dst != -1:
+                # Xからぶつかる手前までを出力
+                out_file.write(chunks[index_x].noun_masked_surface('X'))
+                dst = chunks[index_x].dst
+                while dst != index_dup:
                     out_file.write(' -> ' + chunks[dst].normalized_surface())
                     dst = chunks[dst].dst
+                out_file.write('|')
+
+                # Yからぶつかる手前までを出力
+                out_file.write(chunks[index_y].noun_masked_surface('Y'))
+                dst = chunks[index_y].dst
+                while dst != index_dup:
+                    out_file.write(' -> ' + chunks[dst].normalized_surface())
+                    dst = chunks[dst].dst
+                out_file.write('|')
+
+                # ぶつかったchunkを出力
+                out_file.write(chunks[index_dup].normalized_surface())
                 out_file.write('\n')
+                                
