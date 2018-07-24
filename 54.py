@@ -32,9 +32,9 @@ parse_nlp()
 root = ET.parse(fname_parsed)
 
 # tokenの抽出
-for token in root.iter('token'):
-
+for token in root.iter('token'):  # tokenタグのついた文書についてイテレータを作る
     # 単語、レンマ、品詞の抽出
+    # 文書内でマッチしたものを出力する。
     word = token.findtext('word')
     lemma = token.findtext('lemma')
     pos = token.findtext('POS')
