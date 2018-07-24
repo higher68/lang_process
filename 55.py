@@ -27,11 +27,11 @@ def parse_nlp():
 
 # nlp.txtを解析
 parse_nlp()
-
 # 解析結果のxmlをパース
 root = ET.parse(fname_parsed)
-
+# token = 字句 があって、その中にnerがあるそうです。さらにnerの中にpersonが格納されてる.
 # tokenの抽出
+# iterfind1~~タグ名または パス にマッチするすべての子要素を検索
 for token in root.iterfind(
     './document/sentences/sentence/tokens/token[NER="PERSON"]'
 ):
