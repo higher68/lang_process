@@ -1,6 +1,6 @@
 import json
 import gzip
-import pymongo
+import pymongo  # pymongo-install done
 from pymongo import MongoClient
 
 fname = 'artist.json.gz'
