@@ -1,5 +1,7 @@
+##!!!!!!!!!!exercute 64.py and setup testdb!!!!!!!!!!!!!
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
 import json
-from pymongo import MongoClient
+from pymongo import MongoClient  # mongodbへのクエリをだす
 from bson.objectid import ObjectId
 
 def support_ObjectId(obj):
@@ -14,12 +16,16 @@ def support_ObjectId(obj):
     raise TypeError(repr(obj) + " is not JSON serializable")
 
 
-# MongoDBのデータベースtestdbにコレクションartistにアクセス
-client = MongoClient()
-db = client.testdb
-collection = db.artist
-
+# MongoDBのデータベースtestdbのコレクションartistにアクセス
+client = MongoClient()  # mongoclientのインスタンス作成
+db = client.testdb  # mongodb内のデータベースの一つ、testdbを呼び出している
+collection = db.artist  # databese内にあるコレクション〜rdbでいうテーブル〜を呼び出す
+# rdb：リレーショナルデータベース
+# rdbは全てのデータをテーブルというデータ形式で表現
+# https://employment.en-japan.com/engineerhub/entry/2017/11/22/110000
 # 検索
+# collectionはfindで検索可能
+# collection.findはcursorオブジェクトを返す
 for i, doc in enumerate(collection.find({'name': 'Queen'}), start=1):
 
     # 整形して表示
@@ -29,3 +35,6 @@ for i, doc in enumerate(collection.find({'name': 'Queen'}), start=1):
             sort_keys=True, default=support_ObjectId
         )
     ))
+# jsonのエンコーダー：json.dumps() 辞書をjson形式の文字列として出力
+# 引数を指定して整形可能
+# json.load()  jsonファイルを辞書として読み込む
