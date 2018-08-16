@@ -10,12 +10,14 @@ def support_ObjectId(obj):
     戻り値：
     ObjectIdから変換した文字列
     '''
-    if isinstance(obj, ObjectId):
+    if isinstance(obj, ObjectId):  # instanceかどうか判定
         return str(obj)     # 文字列として扱う
     raise TypeError(repr(obj) + " is not JSON serializable")
+    # 意図しない処理をしろうなら、例外処理をさせる操作
+    # goto文みたいなもの
 
 
-# MongoDBのデータッベースtestdbにコレクションにartistにアクセス
+# MongoDBのデータベースtestdbのコレクションartistにアクセス
 client = MongoClient()
 db = client.testdb
 collection = db.artist
