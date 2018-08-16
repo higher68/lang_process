@@ -1,4 +1,5 @@
 # coding: utf-8
+# 動作確認済
 import json
 import pymongo
 from pymongo import MongoClient
