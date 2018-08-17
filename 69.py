@@ -32,5 +32,30 @@ template_html = Template('''
 ''')
 
 
+# 結果表示部分(template_htmlの$contents部分)のテンプレート
+template_result = Template('''
+    <hr />
+    ($index件目/全$total件)<br />
+    [名前] $name<br />
+    [別名] $aliases<br />
+    [活動場所] $area<br />
+    [タグ] $tags<br />
+    [レーティング] $rating<br />
+''')
 
-)
+# testdbのコレクションartistにアクセス
+client = MongoClient()
+db = client.testdb
+collection = db.artist
+
+
+# 条件を作成
+form = cgi.FieldStorage()
+clue = {}
+clue_name = ''  # 名前の入力欄の内容
+clue_tag = ''  # タグの入力欄の内容
+
+if 'name' in form:
+    clue_name = form['name'].value
+    clue = {'$or': [{'name': clue_name}, {'aliases.name' : clue_name}]
+}
