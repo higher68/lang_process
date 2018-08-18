@@ -113,6 +113,56 @@ if len(clue) > 0:
     results = collection.find(clue)
     results.sort('rating.count', pymongo.DESCENDING)
     # pytmongo.DESCENDINGで逆順にcollectionがソートされる
-    total = result.count()
+    total = results.count()
 
     # 結果を整形
+    dict_template = {}
+    # if a in bで、bの中にaが含まれているか調べられる
+    for i, doc in enumerate(result[0:max_view_count], start=1):
+
+        # 結果の初期値をセット
+        dict_template['index'] = i
+        dict_template['total'] = total
+        dict_template['name'] = escape(doc['name'])
+        # escapeは、文字列内の特殊文字を特殊文字として扱う&とか。
+
+        if 'aliases' in doc:
+            dict_template['aliases'] = \
+            ','.join(escape(alias['name']) for alias in doc['aliases'])
+        else:
+            dict_template['aliases'] = '(データなし)'
+
+        if 'area' in doc:
+            dict_template['area'] = escape(doc['area'])
+        else:
+            dict_template['area'] = '(データなし)'
+
+        if 'tags' in doc:
+            dict_template['tags'] = \
+            ','.join(escape(tag['value']) for tag in doc['tags'])
+        else:
+            dict_template['tags'] = '(データなし)'
+
+        if 'rating' in doc:
+            dict_template['rating'] = doc['rating']['count'])
+        else:
+            dict_template['rating'] = '(データなし)'
+
+        contents += template_result.substitute(dict_template)
+
+# HTML全体のテンプレート用辞書に内容をセット
+dict_template ={}
+dict_template['clue_name'] = escape(clue_name)
+dict_template['clue_tag'] = escape(clue_tag)
+dict_template['contens'] = contents
+
+if total > max_view_count:
+    dict_template['message'] = '結果が多いため先頭{}件を表示しています'.format(max_view_count)
+elif total == -1:
+    dict_template['message'] = '検索条件を入力してください'
+elif total = 0:
+    dict_template['message'] = '該当するアーティストは見つかりませんでした'
+else:
+    dict_template['message'] = ''
+
+print(template_html.substitute(dict_template))
