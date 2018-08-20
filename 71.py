@@ -24,7 +24,7 @@ def is_stopped(str):
     ストップワード：True
     それ以外：False
     '''
-    return str.lower in stop_words
+    return str.lower() in stop_words
 
 
 # assert 条件式, 条件式がFalseの場合に出力するメッセージ
@@ -32,11 +32,17 @@ def is_stopped(str):
 # 正しく抽出されるテスト
 assert is_stopped('a')  # リストの先頭
 assert is_stopped('your')  # リストの末尾
-assert is_stopped('neigher')  # リストの中間
+assert is_stopped('neither')  # リストの中間
 assert is_stopped('OWN')  # 大小文字の同一視
-assert is_stopped('as')
-assert is_stopped('eigher')
-assert is_stopped('him')
-assert is_stopped('likely')
+assert is_stopped('We')  # 大小文字の同一視
+assert is_stopped('werE')  # 大小文字の同一視
 
-# 誤検出のテスト
+# 誤抽出されない確認
+assert not is_stopped('0')  # リストになし
+assert not is_stopped('あ')  # リストになし
+assert not is_stopped('youe')   # 後方不一致
+assert not is_stopped('yo0r')   # 前方不一致
+assert not is_stopped('hour')   # 中間不一致
+assert not is_stopped(' ')   # 空白
+assert not is_stopped('\n')   # 制御コード
+assert not is_stopped('')   # 空文字
