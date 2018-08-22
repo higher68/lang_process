@@ -33,11 +33,11 @@ def is_stopped(str):
 
 # stemming：単語の語幹を取り出す
 # 素性（文章の特徴）抽出
-stemmer = snowballstemme.stemmer('english')  # 'english'で英語を解析できるように設定してるのかなあ。
+stemmer = snowballstemmer.stemmer('english')  # 'english'で英語を解析できるように設定してるのかなあ。
 # return stemmer object
 word_counter = Counter()  # key=要素、 value=出現回数として要素の数を数えてくれる
-
-with codecs.open(fname_sentiment, 'r', fenconding) as file_in:
+i=0
+with codecs.open(f_sentiment, 'r', fencoding) as file_in:
     for line in file_in:
         for word in line[3:].split():  # ラベルを削除
             # 余分な前後の空白削除
@@ -56,3 +56,13 @@ with codecs.open(fname_sentiment, 'r', fenconding) as file_in:
 
             # 候補に追加 counter object はupdateで追加するのか
             word_counter.update([word])
+            print(word_counter.items())
+            i+=1
+            if i == 90:exit()
+# 出現数が6以上のものを採用
+# items()でキーとvalueのペアのタプタプルのリストを取得できる
+features = [word for word, count in word_counter.items() if count >= 6]
+
+# 書き出し
+with codecs.open(f_features, 'w', fencoding) as f_out:
+    print(*features, sep='\n', file=f_out)
