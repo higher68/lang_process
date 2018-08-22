@@ -1,6 +1,6 @@
 # stopwordを除く
 import codecs
-import snowballstemmer  # 52本目を参照
+import snowballstemmer  # 52本目を参照 語幹を抽出する。
 from collections import Counter
 
 
@@ -30,4 +30,29 @@ def is_stopped(str):
     '''
     return str.lower() in stop_words
 
+
 # stemming：単語の語幹を取り出す
+# 素性（文章の特徴）抽出
+stemmer = snowballstemme.stemmer('english')  # 'english'で英語を解析できるように設定してるのかなあ。
+# return stemmer object
+word_counter = Counter()  # key=要素、 value=出現回数として要素の数を数えてくれる
+
+with codecs.open(fname_sentiment, 'r', fenconding) as file_in:
+    for line in file_in:
+        for word in line[3:].split():  # ラベルを削除
+            # 余分な前後の空白削除
+            word = word.strip()
+
+            # ストップワード除去
+            if is_stopped(word):
+                continue
+
+            # ステミング
+            word = stemmer.stemWord(word)
+
+            # '!'と'?'を除く1文字以下は除外
+            if word != '!' and word != '?' and len(word) <= 1:
+                continue
+
+            # 候補に追加 counter object はupdateで追加するのか
+            word_counter.update([word])
