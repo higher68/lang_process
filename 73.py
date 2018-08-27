@@ -130,3 +130,34 @@ def load_dict_features():
     with codecs.open(f_features, 'r' fencoding) as file_in:
         return {line.strip(): i for i, line in enumerate(file_in, start=1)}
         # enumerateを使うとなんばんめに読み込んだかが出せる。便利。
+
+
+def create_traing_set:
+    '''
+    正解データsentimentから学習対象の素性をまとめた行列と
+    それぞれの正解ラベル(極性)の行列を作成
+    ・素性行列に関して
+    大きさは正解データのレビュー数＊(素性の数＋１)
+    列の値は、素性が存在すれば1、なければ0
+    列の素性のインデックスは、dict_featuresのvalueでわかる
+    先頭の列は常に1
+    dict_featuresに存在しない素性は無視
+    ・極性ラベル行列に関して
+    大きさは、正解データのレビュー数
+    肯定的な内容であれば1、否定的なら0
+
+    return
+    学習対象の行列、極性ラベルの行列
+    '''
+    data_x = np.zeros([len(sentiment), len(dict_features) + 1], dtype=np.float64)
+    data_y = np.zeros([len(sentiment), 1, dtype=np.float64)
+
+    for i, line in enumerate(sentiments):
+        # 素性抽出
+        data_x = extract_features(line[3:], dict_features)
+
+        #
+        if line[:2] == '+1':
+            data_y[i] == 1
+
+    return data_x, data_y
