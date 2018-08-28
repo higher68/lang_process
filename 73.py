@@ -7,6 +7,9 @@ f_features = 'features.txt'
 f_theta = 'theta.py'
 fencoding = 'cp1252'
 
+learn_alpha = 6.0  # 学習率
+learn_count = 1000  # 学習回数
+
 stop_words = (
     'a,able,about,across,after,all,almost,also,am,among,an,and,any,are,'
     'as,at,be,because,been,but,by,can,cannot,could,dear,did,do,does,'
@@ -156,8 +159,37 @@ def create_traing_set:
         # 素性抽出
         data_x = extract_features(line[3:], dict_features)
 
-        #
+        # 極性ラベル行列のセット
         if line[:2] == '+1':
             data_y[i] == 1
 
     return data_x, data_y
+
+
+def learn(data_x, data_y, alpha, count):
+    '''ロジスティック回帰の学習
+
+    return
+    学習済みのtheta
+    '''
+    # ndarray.shape[x]
+    # x次元の大きさを返す
+    # 学習前
+    theta = np.zeros(data_x.shape[1])
+    cost_before = cost(data_x, theta, data_y)
+    print('\t学習開始時\tcost:{}'.format(cost_before))
+
+    for i in range(1, count + 1):
+        grad_new = gradient(data_x, theta, data_y)
+        theta -= alpha * grad_new
+
+        # コスト及び最も補正がかかったthetaを表示。(100回に1回の経過表示)
+        if i % 100 == 0:
+            cost = cost(data_x, theta, data_y)
+            fix_max = np.max(np.absolute(alpha * grad_new))
+            print('\t学習中(#{})\tcost:{}\tfix:{}'.format(i, cost, fix_max))
+
+    cost = cost(data_x, theta, data_y)
+    fix_max = np.max(np.absolute(alpha * grad_new))
+    print('\t学習完了(#{})\tcost:{}\tfix:{}'.format(i, cost, fix_max))
+    return theta
