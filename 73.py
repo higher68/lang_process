@@ -193,3 +193,16 @@ def learn(data_x, data_y, alpha, count):
     fix_max = np.max(np.absolute(alpha * grad_new))
     print('\t学習完了(#{})\tcost:{}\tfix:{}'.format(i, cost, fix_max))
     return theta
+
+# 素性辞書の読み込み
+dict_features = load_dict_features()
+
+# 学習対象の行列、極性ラベルの作成
+with codecs.open(f_sentiment, 'r', fencoding) as fine_in:
+    data_x, data_y = create_traing_set(list(file(in), dict_features)
+# 学習
+print('学習率：{}\t学習繰り返し数：{}'.format(learn_alpha, learn_count))
+theta = learn(data_x, data_y, alpha=learn_alpha, count=learn_count)
+
+#  結果を保存 np.save()  はnumpyで作成した形式でデータを保存できるよ
+np.save(f_theta, theta)
