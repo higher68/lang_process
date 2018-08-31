@@ -23,3 +23,14 @@ with codecs.open(f_features, "r", fencoding) as file_in:
 # thetaはもともと値のみが順番に書き込まれてる1次元配列なので、
 # argsortにそのまま入れてよく、入れるとインデックス番号の配列が出てくる
 index_sorted = np.argsort(theta)
+
+# 上位、下位10件表示
+print('top 10')
+for index in index_sorted[:-11:-1]:
+    print('\t{}\t{}'.format(theta[index],
+            features[index - 1].strip() if index > 0 else '(none)'))
+
+print('worst 10')
+for index in index_sorted[0:10:]:
+    print('\t{}\t{}'.format(theta[index],
+            features[index - 1].strip() if index > 0 else '(none)'))
