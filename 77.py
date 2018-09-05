@@ -31,3 +31,17 @@ def scores(fname):
                     FN += 1
                 else:
                     TN += 1
+    # 算出
+    accuracy = (TP + TN) / (TP + FP + FN + TN)      # 正解率
+    precision = TP / (TP + FP)      # 適合率
+    recall = TP / (TP + FN)     # 再現率
+    f1 = (2 * recall * precision) / (recall + precision)    # F1スコア
+
+    return accuracy, precision, recall, f1
+
+
+# スコア算出
+accuracy, precision, recall, f1 = score(fname_result)
+print('正解率　\t{}\n適合率　\t{}\n再現率　\t{}\nF1スコア　\t{}'.format(
+    accuracy, precision, recall, f1
+))
