@@ -223,7 +223,44 @@ dict_features = load_dict()
 with codecs(f_sentiment, 'r', fencoding) as file_in:
     sentiment_all = list(file_in)
 
+# 正解データの分割
+sentiments = []
+unit = int(len(sentiment_all) / division)
+for i in range(5):
+    sentiments.append(sentiment_all[i*unit:(i+1)*unit])
+
+# 5分割交差検証
 with open(fname_result, "w") as file_out:
     for i in range(division):
 
         print('{}th learn'.format(i+1))
+        # 学習用と正解用にデータを分割
+        data_learn = []
+        for j in range(division):
+            if j == i:
+                data_validation = sentiments[j]
+            else:
+                data_learn += sentiments[j]
+
+        # 学習対象の配列と極性ラベルの配列作成
+        data_x, data_y = create_traing_set(data_learn, dict_features)
+
+        # 学習
+        theta = learn(data_x, data_y, alpha=learn_alpha, count=learn_count)
+        # 検証
+        for line in data_validation:
+
+            # 素性抽出
+            data_one_x = extract_features(line[3:], dict_features)
+
+            # 予測、結果出力
+            h = hypothesis(data_one_x, theta)
+            if h > 0.5:
+                file_out.write('{}\t{}\t{}\n'.format(line[0:2], '+1', h))
+            else:
+                file_out.write('{}\t{}\t{}\n'.format(line[0:2], '-1', h))
+
+# 結果表示
+print('\n学習レート:{}\t学習繰り返し数:{}'.format(learn_alpha,learn_count))
+accuracy, precision, recall, f1 = score(f_result)
+print('正解率\t{}\n適合率\t{}\n再現率\t{}\nF1スコア\t{}'.format(accuracy,precision,recall,f1))
