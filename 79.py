@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
@@ -48,19 +48,18 @@ def scores(fname):
 # 以下でthreshholdを変えて、各スコアを計算し直す
 # 学習結果は使い回し。
 # 学習結果の格納
-results = []
 with open(f_result) as f_in:
     for line in f_in:
         values = line.split()
-        cols = []
+        cols1 = []
+        cols2 = []
         # 正解ラベル
-        cols.append(values[0])
+        cols1.append(values[0])
         # 正解確率
         if values[1] == '+1':
-            cols.append(float(values[2]))
+            cols2.append(float(values[2]))
         else:
-            cols.append(1.0-float(values[2]))
-        results.append(cols)
+            cols2.append(1.0-float(values[2]))
 # thresholdを変えながら描画用のデータをセット
 thresholds = []
 accuracys = []
@@ -69,9 +68,24 @@ recalls = []
 f1s = []
 # np.arrange(start, stop, step)
 for threshold in np.arrange(0.02, 1.0, 0.02):
-    with open(f_work) as f_out:
-        for i, label, val in zip(result[:, 0], result[:, 1]):
-
     thresholds.append(threshold)
+    with open(f_work) as f_out:
+        for label, val in zip(cols1, cols2):
+            # 予測、結果出力
+            if val > threshold:
+                f_out.write('{}\t{}\t{}\n'.format(label, '+1', val))
+            else:
+                f_out.write('{}\t{}\t{}\n'.format(label, '-1', 1-val))
+    accurcy, precision, recall, f1 = scores(f_work)
+    accuracys.append(accurcy)
+    precisions.append(precision)
+    recalls.append(recall)
+    f1s.append(f1)
 
-fig = plt.figure()
+# グラフ描画
+plt.figure()
+plt.plot(thresholds, accuracys, precisions, recalls, f1s)
+plt.xlim(0, 1.0)
+plt.legend("正解率", "予測率", "適合率", "F１スコア")
+
+plt.show()
