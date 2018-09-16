@@ -13,12 +13,12 @@ n = 0
 count_cooc = Counter()
 count_word = Counter()
 count_context = Counter()
-
+list_cooc = []
+list_word = []
+list_context = []
 with open(file_in, "rt") as data_file:
-    for line in data_file:
-        list_cooc = []
-        list_word = []
-        list_context = []
+    # メモリとプロセス削減用にthresholdを儲けて、それを超えたらcounterに突っ込む
+    for i, line in enumerate(data_file):
         # \t分割されたデータを分解。それぞれリストに格納
         words = line.strip().split("\t")
         list_word.append(words[0])
@@ -28,10 +28,20 @@ with open(file_in, "rt") as data_file:
 
         # Counter型はupdateで値を追加する
         # 格納したデータをcounterで数えていく。
-        count_word.update(list_word)
-        count_context.update(list_context)
-        count_cooc.update(list_cooc)
+        # 逐一追加すると、計算量がかかるので、一定以上溜まったらね。
+        if i % 10000 == 0:
+            count_word.update(list_word)
+            count_context.update(list_context)
+            count_cooc.update(list_cooc)
+            list_cooc = []
+            list_word = []
+            list_context = []
+            print("{} column done".format(i))
 
+# あぶれたものを追加
+count_word.update(list_word)
+count_context.update(list_context)
+count_cooc.update(list_cooc)
 # 計算結果の書き出し
 with open(file_CoOccur, "wt") as data_cooc:
     list_cooc = list(count_cooc.items())
