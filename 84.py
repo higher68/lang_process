@@ -8,6 +8,8 @@ file_cooc = "83_CoOccur.txt"
 file_word = "83_word.txt"
 file_context = "83_context.txt"
 file_out = "84.txt"
+file_dict_word = "84_word.txt"
+file_dict_context = "84_context.txt"
 
 N = 68031841  # 83本目で求めた定数
 # pickle.loadで、保存したファイルを元々のオブジェクトそのものので読み込める。
@@ -28,7 +30,7 @@ dict_index_context = OrderedDict((key, i) for i, key in
 # lil_matrixを用いた行列の作成
 size_word = len(dict_index_word)
 size_context = len(dict_index_context)
-matrix = sparese.lil_matrix((size_word, size_context))
+matrix = sparse.lil_matrix((size_word, size_context))
 
 # f_tcでループを回す。値が10以上だったら、ppmiを計算。mattrixに格納
 # ループを回す際のイテレータは、counter.itemsを使うとキーとvalueのペアの
@@ -41,6 +43,15 @@ for token, f_tc in counter_cooc:
         context = token[1]
         f_t = counter_word[word]
         f_c = Counter
-        ppmi = max(math.log(n * f_tc/(f_t*f_C)), 0)
+        ppmi = max(math.log(N * f_tc/(f_t*f_c)), 0)
+        matrix[dict_index_word[word], dict_index_context[context]] = ppmi
 
-with open(file_out, "wt") as result_file:
+# 結果の書き出し
+# 行列はio.savematで直列化、io.loadmatで戻すことができる。
+# できるファイルはmatlabと互換性質があるとよ。
+# 辞書のようにキーを指定して保存
+io.savemat(file_out, {'matrix': matrix})
+with open(file_dict_word, "wt") as result_file1, \
+     open(file_dict_context, "wt") as result_file2:
+    pickle.dump(dict_index_word, result_file1)
+    pickle.dump(dict_index_context, result_file2)
