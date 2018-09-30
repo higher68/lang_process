@@ -6,7 +6,6 @@ import numpy as np
 f_dict = "84_dict_index"
 f_matrix = "85_matrix_300"
 f_in = "91_family.txt"
-f_out = "92_family_out.txt"
 
 
 def cos_sim(vec_a, vec_b):
