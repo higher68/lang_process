@@ -17,4 +17,16 @@ def cos_sim(vec_a, vec_b):
         return -1
 
 
-f_in = "combined.tab"  # 2つの結果がマージされたデータ。タブ区切り。
+f_in = "./wordsim353/combined.tab"  # 2つの結果がマージされたデータ。タブ区切り。
+f_dict = "84_dict_index"
+f_matrix = "85_matrix_300"
+f_out = "94_combined_sim.tab"
+
+with open(f_dict, "rt") as data_file:
+    dict_index = pickle.load(data_file)
+
+matrix_300 = io.loadmat(f_matrix)["matrix_300"]
+
+with open(f_in, "rt") as data_file,
+     open(f_out, "wt") as out_file:
+     
