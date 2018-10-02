@@ -27,6 +27,18 @@ with open(f_dict, "rt") as data_file:
 
 matrix_300 = io.loadmat(f_matrix)["matrix_300"]
 
-with open(f_in, "rt") as data_file,
+with open(f_in, "rt") as data_file, \
      open(f_out, "wt") as out_file:
-     
+    header = True
+    for line in data_file:
+        if header is True:
+            header = False
+            continue
+        cols = line.split()
+        try:
+            dist = cos_sim(matrix_300[dict_index[cols[0]]],
+                           matrix_300[dict_index[cols[1]]])
+        except KeyError:
+            # 単語がなければ-1で出力
+            dist = -1
+        print("{}\t{}".format(line.split(), dist, file=out_file))
